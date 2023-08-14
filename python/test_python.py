@@ -1,14 +1,17 @@
 import docker
 import pytest
+import os
 
 @pytest.fixture
 def docker_container(request):
-    """Fixture creates a docker image based on the given image name
-    and path to the dockerfile directory, returns the created container"""
+    """
+    Fixture creates a python docker image and spins up a container, executing the
+    command passed in as an argument
+    """
     
     client = docker.from_env()
-    image_name = request.param['image']
-    build_context = request.param['path']
+    image_name = 'python-rosetta'
+    build_context = './'
 
     image, logs = client.images.build(path=build_context, tag=image_name)
 
@@ -17,7 +20,7 @@ def docker_container(request):
 
     # If detach=False, container run method will just return the log output, not the 
     # container obj bc container is stopped at this point
-    container = client.containers.run(image, detach=True)
+    container = client.containers.run(image, command=request.param, detach=True)
     yield container
 
     # Clean up: Stop and remove the container
@@ -28,12 +31,7 @@ class TestNullChar:
 
     @pytest.mark.parametrize(
             'docker_container',
-            [
-               {
-                   'image': 'rosetta-python:null_char',
-                    'path': './python/null_char'
-                } 
-            ],
+            ['python null_char.py'],
             indirect=True,
     )
     def test_null_char(self, docker_container):
@@ -42,24 +40,19 @@ class TestNullChar:
         assert docker_container.logs() == b'Hello World \x00\n'
 
 class TestStdIn:
-    """Check that input is read from stdin line by line.
+    """Check that input is read from stdin, line by line.
     The script executed in the docker container accepts a text file as input,
     reads each line, capitalizes it, then prints it out.
     """
     @pytest.mark.parametrize(
             'docker_container',
-            [
-               {
-                   'image': 'rosetta-python:stdin',
-                    'path': './python/stdin'
-                } 
-            ],
+            [["/bin/sh", "-c", "python stdin.py < stdin.txt"]],
             indirect=True,
     )
     def test_stdin(self, docker_container):
-        i = 1
         expected = ""
-        with open('python/stdin/stdin.txt', 'r') as f:
+        i = 1
+        with open('./stdin.txt', 'r') as f:
             for line in f.readlines():
                 expected += f"{i} {line.upper()}"
                 i += 1
@@ -69,12 +62,7 @@ class TestStdIn:
 class TestArgs:
     @pytest.mark.parametrize(
             'docker_container',
-            [
-               {
-                   'image': 'rosetta-python:arguments',
-                    'path': './python/arguments'
-                } 
-            ],
+            ['python arguments.py "Argument Number 1"'],
             indirect=True,
     )
     def test_args(self, docker_container):

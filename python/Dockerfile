@@ -5,11 +5,6 @@ FROM python:3.11-alpine
 WORKDIR /app
 
 # Copy the current directory contents into the container at /app
-COPY null_char.py /app
+COPY ./ /app
 
 ENV DOCKER_HOST="ssh://coffee"
-
-# Run app.py when the container launches
-
-# python null_char.py
-CMD ["python", "null_char.py"]
