@@ -1,5 +1,6 @@
 import docker
 import pytest
+import json
 
 @pytest.fixture
 def docker_container(request):
@@ -10,7 +11,7 @@ def docker_container(request):
     
     client = docker.from_env()
     image_name = 'python-rosetta'
-    build_context = './'
+    build_context = './python/'
 
     image, logs = client.images.build(path=build_context, tag=image_name)
 
@@ -29,14 +30,15 @@ def docker_container(request):
 class TestNullChar:
 
     @pytest.mark.parametrize(
-            'docker_container',
-            ['python null_char.py'],
-            indirect=True,
+        'docker_container',
+        ['python null_char.py'],
+        indirect=True,
     )
     def test_null_char(self, docker_container):
         # Have to wait on container to get the logs
         docker_container.wait()
         assert docker_container.logs() == b'Hello World \x00\n'
+
 
 class TestStdIn:
     """Check that input is read from stdin, line by line.
@@ -51,22 +53,42 @@ class TestStdIn:
     def test_stdin(self, docker_container):
         expected = ""
         i = 1
-        with open('./stdin.txt', 'r') as f:
+        with open('./python/stdin.txt', 'r') as f:
             for line in f.readlines():
                 expected += f"{i} {line.upper()}"
                 i += 1
         docker_container.wait()
         assert str(docker_container.logs(), 'UTF-8') == expected
 
+
 class TestArgs:
     @pytest.mark.parametrize(
-            'docker_container',
-            ['python arguments.py "Argument Number 1"'],
-            indirect=True,
+        'docker_container',
+        ['python arguments.py "Argument Number 1"'],
+        indirect=True,
     )
     def test_args(self, docker_container):
         docker_container.wait()
         assert docker_container.logs() == b'Argument Number 1\n'
+
+
+class TestReadJsonFile:
+    @pytest.mark.parametrize(
+        'docker_container',
+        [["/bin/sh", "-c", "python read_json.py < person-records.json"]],
+        indirect=True,
+    )
+    def test_read_json_file(self, docker_container):
+        
+        file_path = "./python/person-records.json"
+
+        with open(file_path, "r") as file:
+            data = json.load(file)
+
+        expected = "".join(f"Hello, {person['age']} year old {person['first_name']}\n" for person in data)
+        
+        docker_container.wait()
+        assert str(docker_container.logs(), 'UTF-8') == expected
 
 # to run in command line:
 # docker run -it --rm rosetta-python
