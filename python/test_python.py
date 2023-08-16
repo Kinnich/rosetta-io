@@ -75,7 +75,7 @@ class TestArgs:
 class TestReadJsonFile:
     @pytest.mark.parametrize(
         'docker_container',
-        [["/bin/sh", "-c", "python read_json.py < person-records.json"]],
+        ['python read_json.py < person-records.json'],
         indirect=True,
     )
     def test_read_json_file(self, docker_container):
