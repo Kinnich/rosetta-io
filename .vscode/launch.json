@@ -19,7 +19,6 @@
             "request": "launch",
             "program": "${file}",
             "args": ["--color=yes"],
-            "env": {"DOCKER_HOST": "ssh://coffee"},
             "console": "integratedTerminal",
             "justMyCode": false
         }
