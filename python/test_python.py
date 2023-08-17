@@ -7,7 +7,7 @@ def expected_read_file_output():
     """Result of reading/capitalizing example input file"""
     expected = ""
     i = 1
-    with open('./python/stdin.txt', 'r') as f:
+    with open('./python/hihello.txt', 'r') as f:
         for line in f.readlines():
             expected += f"{i} {line.upper()}"
             i += 1
@@ -59,7 +59,7 @@ class TestStdIn:
     """
     @pytest.mark.parametrize(
             'docker_container',
-            [["/bin/sh", "-c", "python stdin.py < stdin.txt"]],
+            [["/bin/sh", "-c", "python stdin.py < hihello.txt"]],
             indirect=True,
     )
     def test_stdin(self, docker_container):
@@ -73,7 +73,7 @@ class TestReadFile:
     """
     @pytest.mark.parametrize(
         'docker_container',
-        ['python read_file.py stdin.txt'],
+        ['python read_file.py hihello.txt'],
         indirect=True,
     )
     def test_read_file(self, docker_container):
