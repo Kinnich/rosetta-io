@@ -82,6 +82,7 @@ class TestReadFile:
 
 
 class TestArgs:
+    """Test that args can be passed to script"""
     @pytest.mark.parametrize(
         'docker_container',
         ['python arguments.py "Argument Number 1"'],
@@ -89,26 +90,29 @@ class TestArgs:
     )
     def test_args(self, docker_container):
         docker_container.wait()
-        assert docker_container.logs() == b'Argument Number 1\n'
+        assert docker_container.logs() == b'argument number 1\n'
 
 
 class TestReadJsonFile:
+    """Test that a JSON file is read correctly"""
     @pytest.mark.parametrize(
         'docker_container',
         ['python read_json.py < person-records.json'],
         indirect=True,
     )
     def test_read_json_file(self, docker_container):
-
         file_path = "./python/person-records.json"
-
         with open(file_path, "r") as file:
             data = json.load(file)
-
         expected = "".join(f"Hello, {person['age']} year old {person['first_name']}\n" for person in data)
 
         docker_container.wait()
         assert str(docker_container.logs(), 'UTF-8') == expected
 
+
+class TestWriteFile:
+    """Test that a script, given a path to a file, can write to that file"""
+    def test_write_file(self, docker_container):
+        assert 0
 # to run in command line:
 # docker run -it --rm rosetta-python
