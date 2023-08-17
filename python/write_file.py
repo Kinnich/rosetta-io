@@ -10,6 +10,9 @@ if len(sys.argv) != 3:
 outfile = sys.argv[1]
 text = sys.argv[2]
 
+if os.path.exists(outfile):
+   print("File already exists, clean this up to be sure we're writing/reading a new file")
+
 with open(outfile, 'w') as f:
     f.write(text.upper())
 
