@@ -2,6 +2,18 @@ import docker
 import pytest
 import json
 
+
+def expected_read_file_output():
+    """Result of reading/capitalizing example input file"""
+    expected = ""
+    i = 1
+    with open('./python/stdin.txt', 'r') as f:
+        for line in f.readlines():
+            expected += f"{i} {line.upper()}"
+            i += 1
+    return expected
+
+
 @pytest.fixture
 def docker_container(request):
     """
@@ -51,14 +63,8 @@ class TestStdIn:
             indirect=True,
     )
     def test_stdin(self, docker_container):
-        expected = ""
-        i = 1
-        with open('./python/stdin.txt', 'r') as f:
-            for line in f.readlines():
-                expected += f"{i} {line.upper()}"
-                i += 1
         docker_container.wait()
-        assert str(docker_container.logs(), 'UTF-8') == expected
+        assert str(docker_container.logs(), 'UTF-8') == expected_read_file_output()
 
 
 class TestReadFile:
@@ -71,17 +77,8 @@ class TestReadFile:
         indirect=True,
     )
     def test_read_file(self, docker_container):
-        # expected output is almost the same as above, but has two line breaks
-        # and I can't figure out why the readlines method writes to the docker
-        # logs that way
-        expected = ""
-        i = 1
-        with open('./python/stdin.txt', 'r') as f:
-            for line in f.readlines():
-                expected += f"{i} {line.upper()}\n" # extra new line
-                i += 1
         docker_container.wait()
-        assert str(docker_container.logs(), 'UTF-8') == expected
+        assert str(docker_container.logs(), 'UTF-8') == expected_read_file_output()
 
 
 class TestArgs:
@@ -98,7 +95,7 @@ class TestArgs:
 class TestReadJsonFile:
     @pytest.mark.parametrize(
         'docker_container',
-        [["/bin/sh", "-c", "python read_json.py < person-records.json"]],
+        ['python read_json.py < person-records.json'],
         indirect=True,
     )
     def test_read_json_file(self, docker_container):

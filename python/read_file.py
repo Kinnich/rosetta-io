@@ -12,5 +12,5 @@ file_path = sys.argv[1]
 with open(file_path, 'r') as f:
     i = 1
     for line in f.readlines():
-        print(i, line.upper())
+        print(i, line.upper(), end='')
         i += 1
