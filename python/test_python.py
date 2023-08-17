@@ -61,6 +61,29 @@ class TestStdIn:
         assert str(docker_container.logs(), 'UTF-8') == expected
 
 
+class TestReadFile:
+    """Check that a file is read line by line, when file path is given
+    as command line argument
+    """
+    @pytest.mark.parametrize(
+        'docker_container',
+        ['python read_file.py stdin.txt'],
+        indirect=True,
+    )
+    def test_read_file(self, docker_container):
+        # expected output is almost the same as above, but has two line breaks
+        # and I can't figure out why the readlines method writes to the docker
+        # logs that way
+        expected = ""
+        i = 1
+        with open('./python/stdin.txt', 'r') as f:
+            for line in f.readlines():
+                expected += f"{i} {line.upper()}\n" # extra new line
+                i += 1
+        docker_container.wait()
+        assert str(docker_container.logs(), 'UTF-8') == expected
+
+
 class TestArgs:
     @pytest.mark.parametrize(
         'docker_container',
