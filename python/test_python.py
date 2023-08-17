@@ -20,7 +20,7 @@ def docker_container(request):
     Fixture creates a python docker image and spins up a container, executing the
     command passed in as an argument
     """
-    
+
     client = docker.from_env()
     image_name = 'python-rosetta'
     build_context = './python/'
@@ -30,7 +30,7 @@ def docker_container(request):
     for log_line in logs:
         print(log_line)
 
-    # If detach=False, container run method will just return the log output, not the 
+    # If detach=False, container run method will just return the log output, not the
     # container obj bc container is stopped at this point
     container = client.containers.run(image, command=request.param, detach=True)
     yield container
@@ -99,14 +99,14 @@ class TestReadJsonFile:
         indirect=True,
     )
     def test_read_json_file(self, docker_container):
-        
+
         file_path = "./python/person-records.json"
 
         with open(file_path, "r") as file:
             data = json.load(file)
 
         expected = "".join(f"Hello, {person['age']} year old {person['first_name']}\n" for person in data)
-        
+
         docker_container.wait()
         assert str(docker_container.logs(), 'UTF-8') == expected
 
