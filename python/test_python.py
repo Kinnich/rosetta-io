@@ -112,7 +112,10 @@ class TestReadJsonFile:
 
 class TestWriteFile:
     """Test that a script, given a path to a file, can write to that file"""
+    @pytest.mark.parametrize(
+        'docker_container',
+        ['python write_file.py output.txt "Bob Barker"'],
+        indirect=True,
+    )
     def test_write_file(self, docker_container):
-        assert 0
-# to run in command line:
-# docker run -it --rm rosetta-python
+        assert str(docker_container.logs(), 'UTF-8') == "BOB BARKER\n"
