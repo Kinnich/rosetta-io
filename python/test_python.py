@@ -97,7 +97,7 @@ class TestReadJsonFile:
     """Test that a JSON file is read correctly"""
     @pytest.mark.parametrize(
         'docker_container',
-        ['python read_json.py < person-records.json'],
+        ['python read_json.py < person-records.json'], # < person-records.json isn't doing anything here since the filepath is in the script
         indirect=True,
     )
     def test_read_json_file(self, docker_container):
@@ -114,8 +114,9 @@ class TestWriteFile:
     """Test that a script, given a path to a file, can write to that file"""
     @pytest.mark.parametrize(
         'docker_container',
-        ['python write_file.py output.txt "Bob Barker"'],
+        [['/bin/sh', '-c', 'python write_file.py output.txt "Bob Barker"; cat output.txt']],
         indirect=True,
     )
     def test_write_file(self, docker_container):
-        assert str(docker_container.logs(), 'UTF-8') == "BOB BARKER\n"
+        docker_container.wait()
+        assert str(docker_container.logs(), 'UTF-8') == "BOB BARKER" # note no new line char
