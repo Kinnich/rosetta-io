@@ -59,7 +59,7 @@ class TestStdIn:
     """
     @pytest.mark.parametrize(
             'docker_container',
-            [["/bin/sh", "-c", "python stdin.py < hihello.txt"]],
+            [['/bin/sh', '-c', 'python stdin.py < hihello.txt']],
             indirect=True,
     )
     def test_stdin(self, docker_container):
@@ -97,10 +97,11 @@ class TestReadJsonFile:
     """Test that a JSON file is read correctly"""
     @pytest.mark.parametrize(
         'docker_container',
-        ['python read_json.py < person-records.json'], # < person-records.json isn't doing anything here since the filepath is in the script
+        [['/bin/sh', '-c', 'python read_json.py < person-records.json']],
         indirect=True,
     )
     def test_read_json_file(self, docker_container):
+        # get expected output
         file_path = "./python/person-records.json"
         with open(file_path, "r") as file:
             data = json.load(file)
