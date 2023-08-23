@@ -1,6 +1,7 @@
 import docker
 import pytest
 import json
+from dataclasses import dataclass
 
 
 def expected_read_file_output():
@@ -39,6 +40,39 @@ def docker_container(request):
     container.stop()
     container.remove()
 
+
+@pytest.fixture
+def docker_client():
+    return docker.from_env()
+
+@pytest.fixture
+def docker_image(docker_client):
+    image_name = 'python-rosetta'
+    build_context = './python/'
+
+    image, logs = docker_client.images.build(path=build_context, tag=image_name)
+
+    for log_line in logs:
+        print(log_line)
+
+    return image
+
+@dataclass
+class DockerHelper:
+    client: docker.DockerClient
+    image: docker.models.images.Image
+    container: docker.models.containers.Container = None
+
+    def run(self, command):
+        self.container = self.client.containers.run(self.image, command=command, detach=True)
+
+@pytest.fixture
+def docker_runner(docker_client, docker_image):
+    helper = DockerHelper(docker_client, docker_image)
+    yield helper
+    helper.container.stop()
+    helper.container.remove()
+
 class TestNullChar:
 
     @pytest.mark.parametrize(
@@ -57,14 +91,10 @@ class TestStdIn:
     The script executed in the docker container accepts a text file as input,
     reads each line, capitalizes it, then prints it out.
     """
-    @pytest.mark.parametrize(
-            'docker_container',
-            [['/bin/sh', '-c', 'python stdin.py < hihello.txt']],
-            indirect=True,
-    )
-    def test_stdin(self, docker_container):
-        docker_container.wait()
-        assert str(docker_container.logs(), 'UTF-8') == expected_read_file_output()
+    def test_stdin(self, docker_runner):
+        docker_runner.run(['/bin/sh', '-c', 'python stdin.py < hihello.txt'])
+        docker_runner.container.wait()
+        assert str(docker_runner.container.logs(), 'UTF-8') == expected_read_file_output()
 
 
 class TestReadFile:
