@@ -121,3 +121,21 @@ class TestWriteFile:
     def test_write_file(self, docker_container):
         docker_container.wait()
         assert str(docker_container.logs(), 'UTF-8') == "BOB BARKER" # note no new line char
+
+
+class TestWriteJsonToStdout:
+    """Test cases in which JSON is written to stdout"""
+    @pytest.mark.parametrize(
+        'docker_container',
+        ['python json_stdout/arrays_nums_objs.py a bc def ghij'],
+        indirect=True,
+    )
+    def test_arrays_nums_objs(self, docker_container):
+        docker_container.wait()
+        logs = str(docker_container.logs(), 'UTF-8').split('\n')
+        assert len(logs) == 5
+        assert logs[0] == '["a", "bc", "def", "ghij"]' # array of strings from args
+        assert logs[1] == '[1, 2, 3, 4]' # length of strings in array
+        assert logs[2] == '{"a": 1, "bc": 2, "def": 3, "ghij": 4}' # dict of string:length
+        assert logs[3] == '{"a": ["a"], "bc": ["b", "c"], "def": ["d", "e", "f"], "ghij": ["g", "h", "i", "j"]}' # arrays as dict values
+        assert logs[4] == ''
