@@ -58,20 +58,24 @@ def docker_image(docker_client):
     return image
 
 @dataclass
-class DockerHelper:
+class DockerRunner:
     client: docker.DockerClient
     image: docker.models.images.Image
     container: docker.models.containers.Container = None
 
     def run(self, command):
+        # save the container so it can be used later by the test
         self.container = self.client.containers.run(self.image, command=command, detach=True)
 
 @pytest.fixture
 def docker_runner(docker_client, docker_image):
-    helper = DockerHelper(docker_client, docker_image)
+    helper = DockerRunner(docker_client, docker_image)
+
     yield helper
-    helper.container.stop()
-    helper.container.remove()
+
+    if helper.container: # i.e. if the test called `docker_runner.run(...)`
+        helper.container.stop()
+        helper.container.remove()
 
 class TestNullChar:
 
