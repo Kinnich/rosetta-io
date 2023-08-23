@@ -69,13 +69,13 @@ class DockerRunner:
 
 @pytest.fixture
 def docker_runner(docker_client, docker_image):
-    helper = DockerRunner(docker_client, docker_image)
+    runner = DockerRunner(docker_client, docker_image)
 
-    yield helper
+    yield runner
 
-    if helper.container: # i.e. if the test called `docker_runner.run(...)`
-        helper.container.stop()
-        helper.container.remove()
+    if runner.container: # i.e. if the test called `docker_runner.run(...)`
+        runner.container.stop()
+        runner.container.remove()
 
 class TestNullChar:
 
