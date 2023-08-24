@@ -16,12 +16,12 @@ def expected_read_file_output():
 
 
 @pytest.fixture
-def docker_client():
+def docker_client() -> docker.DockerClient:
     return docker.from_env()
 
 
 @pytest.fixture
-def docker_image(docker_client):
+def docker_image(docker_client) -> docker.models.images.Image:
     image_name = 'python-rosetta'
     build_context = './python/'
 
