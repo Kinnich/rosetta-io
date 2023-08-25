@@ -33,10 +33,15 @@ def once_per_test_suite_run(tmp_path_factory, testrun_uid, worker_id):
 
 @pytest.fixture
 def docker_image(docker_client: docker.DockerClient, once_per_test_suite_run) -> str:
+    """Returns the image name which is all we need for using it, but first ensures that the image is built"""
+
     image_name = 'python-rosetta'
     build_context = './python/'
 
+    # Only allow the first pytest-xdist worker that gets here to build the
+    # image. Otherwise, they will all try to build it and clobber each other.
     with once_per_test_suite_run("build-image", image_name) as should_build:
+        # should_build will be True if this is the the first worker to get here, otherwise False
         if should_build:
             _, logs = docker_client.images.build(path=build_context, tag=image_name)
             for log_line in logs:
