@@ -5,7 +5,7 @@ from ilock import ILock
 
 
 @contextmanager
-def lock_for_early_bird(tmp_dir: pathlib.Path, *lock_keys: [str], worker_id = 'worker'):
+def early_bird_lock(tmp_dir: pathlib.Path, *lock_keys: [str], worker_id = 'worker'):
     """
     A context manager that either:
     - yields True if you are the "early bird" (the first worker to call this function
@@ -19,7 +19,7 @@ def lock_for_early_bird(tmp_dir: pathlib.Path, *lock_keys: [str], worker_id = 'w
 
     Use like so:
 
-    lock_for_early_bird(mytmp_dir, testrun_id, 'build-image') as should_build:
+    early_bird_lock(mytmp_dir, testrun_id, 'build-image') as should_build:
       if should_build:
         # ... build the image. Other worker will wait until this is done.
       else:

@@ -3,7 +3,7 @@ import pytest
 import json
 from dataclasses import dataclass
 
-from .locking import lock_for_early_bird
+from .locking import early_bird_lock
 
 
 def expected_read_file_output():
@@ -22,15 +22,21 @@ def docker_client() -> docker.DockerClient:
     return docker.from_env()
 
 @pytest.fixture
-def once_per(tmp_path_factory, worker_id):
-    return lambda *lock_keys: lock_for_early_bird(tmp_path_factory.getbasetemp().parent, *lock_keys, worker_id=worker_id)
+def once_per_test_suite_run(tmp_path_factory, testrun_uid, worker_id):
+    def once_per_this_test_run(*lock_keys):
+        return early_bird_lock(
+            tmp_path_factory.getbasetemp().parent,
+            testrun_uid, *lock_keys,
+            worker_id=worker_id
+        )
+    return once_per_this_test_run
 
 @pytest.fixture
-def docker_image(docker_client: docker.DockerClient, once_per, testrun_uid) -> docker.models.images.Image:
+def docker_image(docker_client: docker.DockerClient, once_per_test_suite_run) -> docker.models.images.Image:
     image_name = 'python-rosetta'
     build_context = './python/'
 
-    with once_per(testrun_uid, "build-image") as should_build:
+    with once_per_test_suite_run("build-image") as should_build:
         if should_build:
             image, logs = docker_client.images.build(path=build_context, tag=image_name)
             for log_line in logs:
