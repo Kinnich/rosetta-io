@@ -2,6 +2,7 @@ import docker
 import pytest
 import json
 from dataclasses import dataclass
+from ilock import ILock
 
 
 def expected_read_file_output():
@@ -21,14 +22,25 @@ def docker_client() -> docker.DockerClient:
 
 
 @pytest.fixture
-def docker_image(docker_client) -> docker.models.images.Image:
+def docker_image(docker_client: docker.DockerClient, testrun_uid, worker_id, tmp_path_factory) -> docker.models.images.Image:
     image_name = 'python-rosetta'
     build_context = './python/'
 
-    image, logs = docker_client.images.build(path=build_context, tag=image_name)
+    image = None
+    logs = []
+
+    image_building_lock = tmp_path_factory.getbasetemp().parent / f"image_building.lock"
+
+    with ILock(testrun_uid):
+        if not image_building_lock.is_file():
+            image_building_lock.write_text(f"built by {worker_id}")
+            image, logs = docker_client.images.build(path=build_context, tag=image_name)
 
     for log_line in logs:
         print(log_line)
+
+    if image is None:
+        image = docker_client.images.get(image_name)
 
     return image
 
