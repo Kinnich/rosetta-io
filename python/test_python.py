@@ -2,7 +2,8 @@ import docker
 import pytest
 import json
 from dataclasses import dataclass
-from ilock import ILock
+
+from .locking import lock_for_early_bird
 
 
 def expected_read_file_output():
@@ -20,27 +21,23 @@ def expected_read_file_output():
 def docker_client() -> docker.DockerClient:
     return docker.from_env()
 
+@pytest.fixture
+def once_per(tmp_path_factory, worker_id):
+    return lambda *lock_keys: lock_for_early_bird(tmp_path_factory.getbasetemp().parent, *lock_keys, worker_id=worker_id)
 
 @pytest.fixture
-def docker_image(docker_client: docker.DockerClient, testrun_uid, worker_id, tmp_path_factory) -> docker.models.images.Image:
+def docker_image(docker_client: docker.DockerClient, once_per, testrun_uid) -> docker.models.images.Image:
     image_name = 'python-rosetta'
     build_context = './python/'
 
-    image = None
-    logs = []
-
-    image_building_lock = tmp_path_factory.getbasetemp().parent / f"image_building.lock"
-
-    with ILock(testrun_uid):
-        if not image_building_lock.is_file():
-            image_building_lock.write_text(f"built by {worker_id}")
+    with once_per(testrun_uid, "build-image") as should_build:
+        if should_build:
             image, logs = docker_client.images.build(path=build_context, tag=image_name)
+            for log_line in logs:
+                print(log_line)
 
-    for log_line in logs:
-        print(log_line)
-
-    if image is None:
-        image = docker_client.images.get(image_name)
+        else:
+            image = docker_client.images.get(image_name)
 
     return image
 
