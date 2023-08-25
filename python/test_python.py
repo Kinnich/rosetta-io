@@ -112,3 +112,36 @@ class TestWriteFile:
         docker_runner.run(['/bin/sh', '-c', 'python write_file.py output.txt "Bob Barker"; cat output.txt'])
         docker_runner.container.wait()
         assert str(docker_runner.container.logs(), 'UTF-8') == "BOB BARKER" # note no new line char
+
+
+class TestWriteJsonToStdout:
+    def test_json_array(self, docker_runner):
+        """Test that JSON array is parsed correctly"""
+        # Write string args as an array of strings to stdout
+        docker_runner.run('python json_stdout/array.py a b c d')
+        docker_runner.container.wait()
+        assert str(docker_runner.container.logs(), 'UTF-8') == '["a", "b", "c", "d"]\n'
+
+    def test_json_numbers(self, docker_runner):
+        """Test that JSON list of numbers is parsed correctly"""
+        # Write to stdout the length of each string argument
+        docker_runner.run('python json_stdout/numbers.py a bc def ghij')
+        docker_runner.container.wait()
+        assert str(docker_runner.container.logs(), 'UTF-8') == '[1, 2, 3, 4]\n'
+
+    def test_json_objects(self, docker_runner):
+        """Test that JSON object is parsed correctly"""
+        # Write a dict of {arg:length} to stdout
+        # include empty string arg to check handling of empty JSON array
+        docker_runner.run('python json_stdout/object.py "" a bc def ghij')
+        docker_runner.container.wait()
+        assert str(docker_runner.container.logs(), 'UTF-8') == '{"": 0, "a": 1, "bc": 2, "def": 3, "ghij": 4}\n'
+
+    def test_json_objects_with_arrays(self, docker_runner):
+        """Test that a JSON object with arrays is parsed correctly"""
+        # Write a dict of {arg:[list of arg chars]} to stdout
+        # include empty string arg to check handling of empty JSON array
+        docker_runner.run('python json_stdout/object_with_array_val.py "" a bc def')
+        docker_runner.container.wait()
+        assert str(docker_runner.container.logs(), 'UTF-8') == '{"": [], "a": ["A"], "bc": ["B", "C"], "def": ["D", "E", "F"]}\n'
+
