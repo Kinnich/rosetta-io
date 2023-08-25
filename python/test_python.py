@@ -145,3 +145,9 @@ class TestWriteJsonToStdout:
         docker_runner.container.wait()
         assert str(docker_runner.container.logs(), 'UTF-8') == '{"": [], "a": ["A"], "bc": ["B", "C"], "def": ["D", "E", "F"]}\n'
 
+    def test_json_array_of_objects(self, docker_runner):
+        """Test that a JSON array made of objects is parsed correctly"""
+        # Write an array of [{arg: length of chars},...] to stdout
+        docker_runner.run('python json_stdout/array_of_objects.py a bc def')
+        docker_runner.container.wait()
+        assert str(docker_runner.container.logs(), 'UTF-8') == '[{"A": 1}, {"BC": 2}, {"DEF": 3}]\n'
