@@ -36,7 +36,7 @@ def docker_image(docker_client: docker.DockerClient, once_per_test_suite_run) ->
     image_name = 'python-rosetta'
     build_context = './python/'
 
-    with once_per_test_suite_run("build-image") as should_build:
+    with once_per_test_suite_run("build-image", image_name) as should_build:
         if should_build:
             image, logs = docker_client.images.build(path=build_context, tag=image_name)
             for log_line in logs:
