@@ -12,7 +12,7 @@ def early_bird_lock(tmp_dir: pathlib.Path, *lock_keys: [str], worker_id = 'worke
     with the tmp_dir and lock_keys you provided)
     - yields False only after the the early bird has finished (i.e. exited the managed context).
 
-    The lock that manages who is and isn't the easly bird:
+    The lock that manages who is and isn't the early bird:
     - is identified by the `tmp_dir` and the `lock_keys`
     - is created if it doesn't exist
     - is saved as a file in the tmp_dir path
