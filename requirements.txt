@@ -3,3 +3,4 @@ pytest ~=7.4.0
 pytest-dotenv ~=0.5.2
 pytest-xdist ~=3.3.1
 pytest-xdist[psutil] ~=3.3.1
+ilock ~=1.0.3

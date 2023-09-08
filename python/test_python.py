@@ -3,6 +3,8 @@ import pytest
 import json
 from dataclasses import dataclass
 
+from .locking import early_bird_lock
+
 
 def expected_read_file_output():
     """Result of reading/capitalizing example input file"""
@@ -19,24 +21,39 @@ def expected_read_file_output():
 def docker_client() -> docker.DockerClient:
     return docker.from_env()
 
+@pytest.fixture
+def once_per_test_suite_run(tmp_path_factory, testrun_uid, worker_id):
+    def once_per_this_test_run(*lock_keys):
+        return early_bird_lock(
+            tmp_path_factory.getbasetemp().parent,
+            testrun_uid, *lock_keys,
+            worker_id=worker_id
+        )
+    return once_per_this_test_run
 
 @pytest.fixture
-def docker_image(docker_client) -> docker.models.images.Image:
+def docker_image(docker_client: docker.DockerClient, once_per_test_suite_run) -> str:
+    """Returns the image name which is all we need for using it, but first ensures that the image is built"""
+
     image_name = 'python-rosetta'
     build_context = './python/'
 
-    image, logs = docker_client.images.build(path=build_context, tag=image_name)
+    # Only allow the first pytest-xdist worker that gets here to build the
+    # image. Otherwise, they will all try to build it and clobber each other.
+    with once_per_test_suite_run("build-image", image_name) as should_build:
+        # should_build will be True if this is the the first worker to get here, otherwise False
+        if should_build:
+            _, logs = docker_client.images.build(path=build_context, tag=image_name)
+            for log_line in logs:
+                print(log_line)
 
-    for log_line in logs:
-        print(log_line)
-
-    return image
+    return image_name
 
 
 @dataclass
 class DockerRunner:
     client: docker.DockerClient
-    image: docker.models.images.Image
+    image: str
     container: docker.models.containers.Container = None
 
     def run(self, command):
