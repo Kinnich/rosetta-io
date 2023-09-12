@@ -131,13 +131,15 @@ class TestWriteFile:
         assert str(docker_runner.container.logs(), 'UTF-8') == "BOB BARKER" # note no new line char
 
 class TestDecodeBase64:
+    """Test that base64 can be decoded as a string"""
     def test_decode(self, docker_runner):
-        docker_runner.run('python decode.py SGVsbG8sIHdvcmxkIQo=')
+        docker_runner.run('python decode.py SGVsbG8sIHdvcmxkIQ==')
         docker_runner.container.wait()
-        assert docker_runner.container.logs() == b'Hello, world!\n\n'
+        assert str(docker_runner.container.logs(), 'UTF-8') == 'Hello, world!\n'
 
 class TestEncodeBase64:
+    """Test that string can be encoded as base64"""
     def test_encode(self, docker_runner):
-        docker_runner.run('python encode.py "Hello, world!\n"')
+        docker_runner.run('python encode.py "Hello, world!"')
         docker_runner.container.wait()
-        assert str(docker_runner.container.logs(), 'UTF-8') == "b'SGVsbG8sIHdvcmxkIQo='\n"
+        assert str(docker_runner.container.logs(), 'UTF-8') == 'SGVsbG8sIHdvcmxkIQ==\n'
