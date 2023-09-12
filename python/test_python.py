@@ -129,3 +129,15 @@ class TestWriteFile:
         docker_runner.run(['/bin/sh', '-c', 'python write_file.py output.txt "Bob Barker"; cat output.txt'])
         docker_runner.container.wait()
         assert str(docker_runner.container.logs(), 'UTF-8') == "BOB BARKER" # note no new line char
+
+class TestDecodeBase64:
+    def test_decode(self, docker_runner):
+        docker_runner.run('python decode.py SGVsbG8sIHdvcmxkIQo=')
+        docker_runner.container.wait()
+        assert docker_runner.container.logs() == b'Hello, world!\n\n'
+
+class TestEncodeBase64:
+    def test_encode(self, docker_runner):
+        docker_runner.run('python encode.py "Hello, world!\n"')
+        docker_runner.container.wait()
+        assert str(docker_runner.container.logs(), 'UTF-8') == "b'SGVsbG8sIHdvcmxkIQo='\n"
