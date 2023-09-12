@@ -67,9 +67,9 @@ def docker_runner(docker_client, docker_image):
 
     yield runner
 
-    if runner.container: # i.e. if the test called `docker_runner.run(...)`
-        runner.container.stop()
-        runner.container.remove()
+    # if runner.container: # i.e. if the test called `docker_runner.run(...)`
+    #     runner.container.stop()
+    #     runner.container.remove()
 
 
 class TestNullChar:
@@ -144,6 +144,7 @@ class TestWriteJsonToStdout:
         # Write to stdout the length of each string argument
         docker_runner.run('python json_stdout/numbers.py a bc def ghij')
         docker_runner.container.wait()
+        print(docker_runner.container.logs())
         assert str(docker_runner.container.logs(), 'UTF-8') == '[1, 2, 3, 4]\n'
 
     def test_json_objects(self, docker_runner):
@@ -168,3 +169,10 @@ class TestWriteJsonToStdout:
         docker_runner.run('python json_stdout/array_of_objects.py a bc def')
         docker_runner.container.wait()
         assert str(docker_runner.container.logs(), 'UTF-8') == '[{"A": 1}, {"BC": 2}, {"DEF": 3}]\n'
+
+    def test_json_control_chars(self, docker_runner):
+        """Test that control characters are output in valide JSON"""
+        docker_runner.run('python json_stdout/control_chars.py "hello \n \0 world"')
+        docker_runner.container.wait()
+        # print(docker_runner.container.logs())
+        assert str(docker_runner.container.logs(), 'UTF-8') == '"hello \\n \\u0000 world"\n'
