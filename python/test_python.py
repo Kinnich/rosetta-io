@@ -171,8 +171,10 @@ class TestWriteJsonToStdout:
         assert str(docker_runner.container.logs(), 'UTF-8') == '[{"A": 1}, {"BC": 2}, {"DEF": 3}]\n'
 
     def test_json_control_chars(self, docker_runner):
-        """Test that control characters are output in valide JSON"""
-        docker_runner.run('python json_stdout/control_chars.py "hello \n \0 world"')
+        """Test that control characters and emojis are output in valide JSON
+        note: control character "\0" is used by C (and Python) to end strings and so we can't
+        pass it as argument in the test because it will raise "invalid argument" error
+        """
+        docker_runner.run('python json_stdout/control_chars.py "hello \n \1 world 🥸"')
         docker_runner.container.wait()
-        # print(docker_runner.container.logs())
-        assert str(docker_runner.container.logs(), 'UTF-8') == '"hello \\n \\u0000 world"\n'
+        assert str(docker_runner.container.logs(), 'UTF-8') == '"hello \\n \\u0001 world \\ud83e\\udd78"\n'
