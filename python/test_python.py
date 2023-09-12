@@ -67,9 +67,9 @@ def docker_runner(docker_client, docker_image):
 
     yield runner
 
-    # if runner.container: # i.e. if the test called `docker_runner.run(...)`
-    #     runner.container.stop()
-    #     runner.container.remove()
+    if runner.container: # i.e. if the test called `docker_runner.run(...)`
+        runner.container.stop()
+        runner.container.remove()
 
 
 class TestNullChar:
@@ -173,8 +173,9 @@ class TestWriteJsonToStdout:
     def test_json_control_chars(self, docker_runner):
         """Test that control characters and emojis are output in valide JSON
         note: control character "\0" is used by C (and Python) to end strings and so we can't
-        pass it as argument in the test because it will raise "invalid argument" error
+        pass it as argument in the test string because it will raise "invalid argument" error
         """
+        # Pass a single string to the script that inculdes a control character and emoji
         docker_runner.run('python json_stdout/control_chars.py "hello \n \1 world 🥸"')
         docker_runner.container.wait()
         assert str(docker_runner.container.logs(), 'UTF-8') == '"hello \\n \\u0001 world \\ud83e\\udd78"\n'
