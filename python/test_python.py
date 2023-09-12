@@ -77,7 +77,7 @@ class TestNullChar:
         docker_runner.run('python null_char.py')
         # Have to wait on container to get the logs
         docker_runner.container.wait()
-        assert docker_runner.container.logs() == b'Hello World \x00\n'
+        assert str(docker_runner.container.logs(), 'UTF-8') == 'Hello World \x00\n'
 
 
 class TestStdIn:
@@ -106,7 +106,7 @@ class TestArgs:
     def test_args(self, docker_runner):
         docker_runner.run('python arguments.py "Argument Number 1"')
         docker_runner.container.wait()
-        assert docker_runner.container.logs() == b'argument number 1\n'
+        assert str(docker_runner.container.logs(), 'UTF-8') == 'argument number 1\n'
 
 
 class TestReadJsonFile:
@@ -137,15 +137,16 @@ class TestWriteJsonToStdout:
         # Write string args as an array of strings to stdout
         docker_runner.run('python json_stdout/array.py a b c d')
         docker_runner.container.wait()
-        assert str(docker_runner.container.logs(), 'UTF-8') == '["a", "b", "c", "d"]\n'
+        script_output = json.loads(docker_runner.container.logs())
+        assert script_output == ["a", "b", "c", "d"]
 
     def test_json_numbers(self, docker_runner):
         """Test that JSON list of numbers is parsed correctly"""
         # Write to stdout the length of each string argument
         docker_runner.run('python json_stdout/numbers.py a bc def ghij')
         docker_runner.container.wait()
-        print(docker_runner.container.logs())
-        assert str(docker_runner.container.logs(), 'UTF-8') == '[1, 2, 3, 4]\n'
+        script_output = json.loads(docker_runner.container.logs())
+        assert script_output == [1, 2, 3, 4]
 
     def test_json_objects(self, docker_runner):
         """Test that JSON object is parsed correctly"""
@@ -153,7 +154,8 @@ class TestWriteJsonToStdout:
         # include empty string arg to check handling of empty JSON array
         docker_runner.run('python json_stdout/object.py "" a bc def ghij')
         docker_runner.container.wait()
-        assert str(docker_runner.container.logs(), 'UTF-8') == '{"": 0, "a": 1, "bc": 2, "def": 3, "ghij": 4}\n'
+        script_output = json.loads(docker_runner.container.logs())
+        assert script_output == {"": 0, "a": 1, "bc": 2, "def": 3, "ghij": 4}
 
     def test_json_objects_with_arrays(self, docker_runner):
         """Test that a JSON object with arrays is parsed correctly"""
@@ -161,14 +163,16 @@ class TestWriteJsonToStdout:
         # include empty string arg to check handling of empty JSON array
         docker_runner.run('python json_stdout/object_with_array_val.py "" a bc def')
         docker_runner.container.wait()
-        assert str(docker_runner.container.logs(), 'UTF-8') == '{"": [], "a": ["A"], "bc": ["B", "C"], "def": ["D", "E", "F"]}\n'
+        script_output = json.loads(docker_runner.container.logs())
+        assert script_output == {"": [], "a": ["A"], "bc": ["B", "C"], "def": ["D", "E", "F"]}
 
     def test_json_array_of_objects(self, docker_runner):
         """Test that a JSON array made of objects is parsed correctly"""
         # Write an array of [{arg: length of chars},...] to stdout
         docker_runner.run('python json_stdout/array_of_objects.py a bc def')
         docker_runner.container.wait()
-        assert str(docker_runner.container.logs(), 'UTF-8') == '[{"A": 1}, {"BC": 2}, {"DEF": 3}]\n'
+        script_output = json.loads(docker_runner.container.logs())
+        assert script_output == [{"A": 1}, {"BC": 2}, {"DEF": 3}]
 
     def test_json_control_chars(self, docker_runner):
         """Test that control characters and emojis are output in valid JSON
@@ -178,6 +182,7 @@ class TestWriteJsonToStdout:
         # Pass a single string to the script that inculdes a control character and emoji
         docker_runner.run('python json_stdout/control_chars.py "hello \n \1 world 🥸"')
         docker_runner.container.wait()
+        script_output = json.loads(docker_runner.container.logs())
         # Note: The text in the log is: "hello \n \u0001 world \ud83e\udd78" but Python escapes
         # the escaped characters in the docker container's log so it looks wonky in the test
-        assert str(docker_runner.container.logs(), 'UTF-8') == '"hello \\n \\u0001 world \\ud83e\\udd78"\n'
+        assert script_output == "hello \n \u0001 world 🥸"
