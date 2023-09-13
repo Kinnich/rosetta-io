@@ -4,10 +4,8 @@ import sys
 
 test_string = sys.argv[1]
 
-# Encode string argument as bytes
-test_bytes = test_string.encode("utf-8")
-
-encoded_bytes = base64.b64encode(test_bytes)
+# Encode string argument as bytes, encode as base64 then decode as string
+encoded_string = base64.b64encode(test_string.encode()).decode()
 
 # Print as a string, not bytes
-print(encoded_bytes.decode("utf-8"))
+print(encoded_string)

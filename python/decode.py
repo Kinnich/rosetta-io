@@ -4,6 +4,6 @@ import sys
 
 encoded_string = sys.argv[1]
 
-decoded_bytes = base64.b64decode(encoded_string)
+decoded_string = base64.b64decode(encoded_string).decode()
 
-print(decoded_bytes.decode("utf-8"))
+print(decoded_string)

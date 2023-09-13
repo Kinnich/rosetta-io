@@ -195,7 +195,7 @@ class TestDecodeBase64:
         assert str(docker_runner.container.logs(), 'UTF-8') == 'Hello, world!\n'
 
 class TestEncodeBase64:
-    """Test that string can be encoded as base64"""
+    """Test that a string can be encoded as base64"""
     def test_encode(self, docker_runner):
         docker_runner.run('python encode.py "Hello, world!"')
         docker_runner.container.wait()
