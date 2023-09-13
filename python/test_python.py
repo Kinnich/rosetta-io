@@ -206,7 +206,7 @@ class TestStreamingStdin:
     """Test that streaming stdin can be read line by line and can write to stdout
     without waiting for all lines to arrive
     Note: this test uses Docker CLI instead of the Python Docker SDK (implemented in the
-    `docker_runner` fixture) since SDK doesn't easily allow for streaming inputs"""
+    `docker_runner` fixture) since SDK doesn't easily allow writing to a container's stdin"""
     def test_stdin(self):
         # Start a subprocess that runs the script and waits for input
         script = subprocess.Popen(
