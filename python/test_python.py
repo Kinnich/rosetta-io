@@ -1,6 +1,7 @@
 import docker
 import pytest
 import json
+import subprocess
 from dataclasses import dataclass
 
 from .locking import early_bird_lock
@@ -200,3 +201,20 @@ class TestEncodeBase64:
         docker_runner.run('python encode.py "Hello, world!"')
         docker_runner.container.wait()
         assert str(docker_runner.container.logs(), 'UTF-8') == 'SGVsbG8sIHdvcmxkIQ==\n'
+
+class TestStreamingStdin:
+    def test_stdin(self):
+        with open('stderr.txt', 'w') as file:
+            script = subprocess.Popen(
+                ['python', 'python/streaming_stdin.py'],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=file,
+                text=True,
+                bufsize=1,
+            )
+            for i in range(1, 10):
+                script.stdin.write(f"line #{i}\n")
+                script.stdin.flush()
+
+                assert script.stdout.readline() == f"LINE #{i}\n"
