@@ -203,18 +203,22 @@ class TestEncodeBase64:
         assert str(docker_runner.container.logs(), 'UTF-8') == 'SGVsbG8sIHdvcmxkIQ==\n'
 
 class TestStreamingStdin:
+    """Test that streaming stdin can be read line by line and can write to stdout
+    without waiting for all lines to arrive
+    Note: this test uses Docker CLI instead of the Python Docker SDK (implemented in the
+    docker runner fixture) since SDK doen't easily allow for streaming inputs"""
     def test_stdin(self):
-        with open('stderr.txt', 'w') as file:
-            script = subprocess.Popen(
-                ['python', 'python/streaming_stdin.py'],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=file,
-                text=True,
-                bufsize=1,
-            )
-            for i in range(1, 10):
-                script.stdin.write(f"line #{i}\n")
-                script.stdin.flush()
-
-                assert script.stdout.readline() == f"LINE #{i}\n"
+        # Start a subprocess that runs the script and waits for input
+        script = subprocess.Popen(
+            ['docker', 'run', '-i', 'python-rosetta', 'python', 'streaming_stdin.py'],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            bufsize=1,
+        )
+        # Give input to the script, line by line, and check result
+        for i in range(1, 10):
+            script.stdin.write(f"line #{i}\n")
+            script.stdin.flush()
+            assert script.stdout.readline() == f"LINE #{i}\n"
