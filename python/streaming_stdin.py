@@ -1,4 +1,4 @@
-"""Script reads streaming input text and prints capitalized string to stdout"""
+"""Script reads streaming input text and then prints capitalized string to stdout"""
 
 while True:
     try:
