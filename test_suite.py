@@ -4,7 +4,7 @@ import json
 import subprocess
 from dataclasses import dataclass
 
-from .locking import early_bird_lock
+from locking import early_bird_lock
 
 
 def expected_read_file_output():
