@@ -3,6 +3,7 @@ import pytest
 import json
 import subprocess
 from dataclasses import dataclass
+from abc import ABC, abstractmethod
 
 from locking import early_bird_lock
 
@@ -18,12 +19,23 @@ def expected_read_file_output():
     return expected
 
 
-@dataclass
-class Python:
-    name="python"
+class Language(ABC):
+    name: str
+
+    @abstractmethod
+    def script_command_parts(self, test_name):
+        pass
 
     def script(self, test_name):
-        return f'python {test_name}.py'
+        return " ".join(self.script_command_parts(test_name))
+
+
+class Python(Language):
+    name = 'python'
+
+    def script_command_parts(self, test_name):
+        return [self.name, f'{test_name}.py']
+
 
 # List of language classes with which to parametrize tests
 LANGUAGES = [Python(),]
@@ -69,7 +81,7 @@ def docker_image(docker_client: docker.DockerClient, once_per_test_suite_run, la
 class DockerRunner:
     client: docker.DockerClient
     image: str
-    language: str
+    language: Language
     container: docker.models.containers.Container = None
 
     def run(self, command):
@@ -227,12 +239,10 @@ class TestStreamingStdin:
     Note: this test uses Docker CLI instead of the Python Docker SDK (implemented in the
     `docker_runner` fixture) since SDK doesn't easily allow writing to a container's stdin"""
     def test_stdin(self, docker_image, language):
-        # Subprocess command needs separate strings i.e. 'python script.py' -> 'python', 'script.py'
-        command, script_name = language.script("streaming_stdin").split()
-
-        # Subprocess constructor that runs the script in a docker container and waits for input
+        # Subprocess constructor runs the script in a docker container and waits for input
+        # Use `script_command_parts` method to format command for Docker CLI as `[...'python', 'script.py']`
         script = subprocess.Popen(
-            ['docker', 'run', '-i', docker_image, command, script_name],
+            ['docker', 'run', '-i', docker_image, *language.script_command_parts('streaming_stdin')],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             text=True, # treat standard streams as text, not bytes
