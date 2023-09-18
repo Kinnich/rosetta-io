@@ -106,7 +106,6 @@ class TestStdIn:
     reads each line, capitalizes it, then prints it out.
     """
     def test_stdin(self, docker_runner, language):
-        # ['/bin/sh', '-c', 'python stdin.py < hihello.txt']
         docker_runner.run_script(['/bin/sh', '-c', f'{language.script("stdin")} < hihello.txt'])
         docker_runner.container.wait()
         assert str(docker_runner.container.logs(), 'UTF-8') == expected_read_file_output()
@@ -228,7 +227,7 @@ class TestStreamingStdin:
     Note: this test uses Docker CLI instead of the Python Docker SDK (implemented in the
     `docker_runner` fixture) since SDK doesn't easily allow writing to a container's stdin"""
     def test_stdin(self, docker_image, language):
-        # Need 2 separate strings for subprocess command
+        # Subprocess command needs separate strings i.e. 'python script.py' -> 'python', 'script.py'
         command, script_name = language.script("streaming_stdin").split()
 
         # Subprocess constructor that runs the script in a docker container and waits for input
