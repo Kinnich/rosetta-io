@@ -28,7 +28,7 @@ class Python:
 # List of language classes with which to parametrize tests
 LANGUAGES = [Python(),]
 
-@pytest.fixture(params=LANGUAGES)
+@pytest.fixture(params=LANGUAGES, ids=[x.name for x in LANGUAGES])
 def language(request):
     return request.param
 
@@ -227,10 +227,13 @@ class TestStreamingStdin:
     without waiting for all lines to arrive
     Note: this test uses Docker CLI instead of the Python Docker SDK (implemented in the
     `docker_runner` fixture) since SDK doesn't easily allow writing to a container's stdin"""
-    def test_stdin(self, docker_image):
-        # Subprocess constructor that runs the py script in a docker container and waits for input
+    def test_stdin(self, docker_image, language):
+        # Need 2 separate strings for subprocess command
+        command, script_name = language.script("streaming_stdin").split()
+
+        # Subprocess constructor that runs the script in a docker container and waits for input
         script = subprocess.Popen(
-            ['docker', 'run', '-i', docker_image, 'python', 'streaming_stdin.py'],
+            ['docker', 'run', '-i', docker_image, command, script_name],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             text=True, # treat standard streams as text, not bytes
