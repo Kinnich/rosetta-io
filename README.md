@@ -12,10 +12,10 @@ The name `rosetta-io` is an hommage to [Rosetta Code](https://rosettacode.org/wi
 
 | Language            | Status      |
 | ------------------- | ----------- |
-| Python 3            | WIP         |
+| Python 3            | ✅          |
+| Ruby                | WIP         |
 | Javascript, Node.js | Not started |
 | R                   | Not started |
-| Ruby                | Not started |
 | PHP                 | Not started |
 | …                   |             |
 
