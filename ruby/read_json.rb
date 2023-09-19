@@ -4,12 +4,10 @@ require 'json'
 json_input = ""
 
 loop do
-  begin
-    line = gets
-    break if line.nil? # Exit the loop when input is nil (EOF)
+  line = gets
+  break if line.nil? # Exit the loop when input is nil (EOF)
 
-    json_input += line
-  end
+  json_input += line
 end
 
 data = JSON.parse(json_input)

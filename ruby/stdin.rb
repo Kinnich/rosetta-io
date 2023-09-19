@@ -1,7 +1,5 @@
-# Test script to get input, transform, and return it
-# Testing that it reads line by line
-# and that it does the transformation (to make sure that we're
-# getting the stdin throught python)
+"""Test script to get input, transform, and write to stdout"""
+
 i = 1
 
 loop do
