@@ -5,7 +5,7 @@ require 'json'
 my_strings = ARGV
 
 # Make dict with the string as key and list of letters as value
-string_letters_dict = Hash[my_strings.map { |string| [string, string.chars.map(&:upcase)]}]
+string_letters_dict = my_strings.to_h { |string| [string.upcase, string.chars.map(&:upcase)] }
 
 # Cast to JSON and print to stdout
 puts JSON.generate(string_letters_dict)
