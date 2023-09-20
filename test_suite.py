@@ -169,7 +169,7 @@ class TestWriteFile:
         docker_runner.container.wait()
         assert str(docker_runner.container.logs(), 'UTF-8') == "BOB BARKER" # note no new line char
 
-@pytest.mark.skip("Not implemented for Ruby yet")
+
 class TestWriteJsonToStdout:
     def test_json_array(self, docker_runner, language):
         """Test that JSON array is parsed correctly"""
