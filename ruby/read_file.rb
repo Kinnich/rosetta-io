@@ -1,14 +1,12 @@
-"""Read a file from file path (given as a command line arg),
-print line by line with line numbers
-"""
+# Read a file from file path (given as a command line arg),
+# print line by line with line numbers
+
 file_path = ARGV[0]
 
 begin
-  i = 1
   File.open(file_path, 'r') do |f|
-    f.each_line do |line|
-      puts "#{i} #{line.upcase}"
-      i += 1
+    f.each_line.with_index do |line, i|
+      puts "#{i+1} #{line.upcase}"
     end
   end
 rescue Errno::ENOENT

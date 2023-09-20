@@ -1,10 +1,10 @@
-"""Test script to get input, transform, and write to stdout"""
+# Test script to get input, transform, and write to stdout
 
 i = 1
 
-loop do
+while user_input = gets
   begin
-    user_input = gets.chomp
+    user_input.chomp
     puts "#{i} #{user_input.upcase}"
     i += 1
   rescue NoMethodError

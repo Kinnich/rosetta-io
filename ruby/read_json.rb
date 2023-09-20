@@ -1,4 +1,4 @@
-"""Read JSON file from stdin line by line"""
+# Read JSON file from stdin line by line
 require 'json'
 
 json_input = ""
