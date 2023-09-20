@@ -106,9 +106,9 @@ def docker_runner(docker_client, docker_image, language):
 
     yield runner
 
-    if runner.container: # i.e. if the test called `docker_runner.run(...)`
-        runner.container.stop()
-        runner.container.remove()
+    # if runner.container: # i.e. if the test called `docker_runner.run(...)`
+    #     runner.container.stop()
+    #     runner.container.remove()
 
 
 class TestNullChar:
@@ -242,7 +242,7 @@ class TestEncodeBase64:
         docker_runner.container.wait()
         assert str(docker_runner.container.logs(), 'UTF-8') == 'SGVsbG8sIHdvcmxkIQ==\n'
 
-@pytest.mark.skip("Not implemented for Ruby yet")
+
 class TestStreamingStdin:
     """Test that streaming stdin can be read line by line and can write to stdout
     without waiting for all lines to arrive
