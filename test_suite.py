@@ -226,7 +226,7 @@ class TestWriteJsonToStdout:
         # the escaped characters in the docker container's log so it looks wonky in the test
         assert script_output == "hello \n \u0001 world 🥸"
 
-@pytest.mark.skip("Not implemented for Ruby yet")
+
 class TestDecodeBase64:
     """Test that base64 can be decoded as a string"""
     def test_decode(self, docker_runner, language):
@@ -234,7 +234,7 @@ class TestDecodeBase64:
         docker_runner.container.wait()
         assert str(docker_runner.container.logs(), 'UTF-8') == 'Hello, world!\n'
 
-@pytest.mark.skip("Not implemented for Ruby yet")
+
 class TestEncodeBase64:
     """Test that a string can be encoded as base64"""
     def test_encode(self, docker_runner, language):
