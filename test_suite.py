@@ -154,10 +154,10 @@ class TestReadJsonFile:
         # get expected output
         file_path = f"{language.name}/person-records.json"
         with open(file_path, "r") as file:
-            data = json.load(file)
-        expected = "".join(f"Hello, {person['age']} year old {person['first_name']}\n" for person in data)
+            people = json.load(file)
+        expected = "".join(f"Hello, {person['age']} year old {person['first_name']}\n" for person in people)
 
-        docker_runner.run_script(['/bin/sh', '-c', f'{language.script("read_json")} < person-records.json'])
+        docker_runner.run_script(['/bin/sh', '-c', f'{language.script("read_json_file")} person-records.json'])
         docker_runner.container.wait()
         assert str(docker_runner.container.logs(), 'UTF-8') == expected
 
