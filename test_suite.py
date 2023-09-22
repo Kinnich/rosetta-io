@@ -113,9 +113,9 @@ def docker_runner(docker_client, docker_image, language):
 
     yield runner
 
-    if runner.container: # i.e. if the test called `docker_runner.run(...)`
-        runner.container.stop()
-        runner.container.remove()
+    # if runner.container: # i.e. if the test called `docker_runner.run(...)`
+    #     runner.container.stop()
+    #     runner.container.remove()
 
 
 class TestNullChar:
@@ -194,7 +194,7 @@ class TestWriteJsonToStdout:
         script_output = json.loads(docker_runner.container.logs())
         assert script_output == [1, 2, 3, 4]
 
-    def test_json_objects(self, docker_runner, language):
+    def test_json_object(self, docker_runner, language):
         """Test that JSON object is parsed correctly"""
         # Write a dict of {arg:length} to stdout
         # include empty string arg to check handling of empty JSON array

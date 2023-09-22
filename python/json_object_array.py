@@ -1,4 +1,4 @@
-"""Script outputs arrays of objects"""
+"""Script writes an array of objects to stdout"""
 import json
 import sys
 

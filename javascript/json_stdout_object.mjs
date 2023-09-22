@@ -9,6 +9,4 @@ for (const string of myStrings) {
   stringLengthDict[string] = string.length
 }
 
-const jsonString = JSON.stringify(stringLengthDict)
-
-console.log(jsonString)
+console.log(JSON.stringify(stringLengthDict))
