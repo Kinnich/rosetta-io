@@ -176,7 +176,7 @@ class TestWriteFile:
         docker_runner.container.wait()
         assert str(docker_runner.container.logs(), 'UTF-8') == "BOB BARKER" # note no new line char
 
-@pytest.mark.skip("Not implemented for Ruby yet")
+
 class TestWriteJsonToStdout:
     def test_json_array(self, docker_runner, language):
         """Test that JSON array is parsed correctly"""
@@ -203,7 +203,7 @@ class TestWriteJsonToStdout:
         script_output = json.loads(docker_runner.container.logs())
         assert script_output == {"": 0, "a": 1, "bc": 2, "def": 3, "ghij": 4}
 
-    def test_json_objects_with_arrays(self, docker_runner, language):
+    def test_json_object_with_array_values(self, docker_runner, language):
         """Test that a JSON object with arrays as values is parsed correctly"""
         # Write a dict of {arg:[list of arg chars]} to stdout
         # include empty string arg to check handling of empty JSON array
@@ -233,7 +233,7 @@ class TestWriteJsonToStdout:
         # the escaped characters in the docker container's log so it looks wonky in the test
         assert script_output == "hello \n \u0001 world 🥸"
 
-@pytest.mark.skip("Not implemented for Ruby yet")
+
 class TestDecodeBase64:
     """Test that base64 can be decoded as a string"""
     def test_decode(self, docker_runner, language):
@@ -241,7 +241,7 @@ class TestDecodeBase64:
         docker_runner.container.wait()
         assert str(docker_runner.container.logs(), 'UTF-8') == 'Hello, world!\n'
 
-@pytest.mark.skip("Not implemented for Ruby yet")
+
 class TestEncodeBase64:
     """Test that a string can be encoded as base64"""
     def test_encode(self, docker_runner, language):
@@ -249,7 +249,7 @@ class TestEncodeBase64:
         docker_runner.container.wait()
         assert str(docker_runner.container.logs(), 'UTF-8') == 'SGVsbG8sIHdvcmxkIQ==\n'
 
-@pytest.mark.skip("Not implemented for Ruby yet")
+
 class TestStreamingStdin:
     """Test that streaming stdin can be read line by line and can write to stdout
     without waiting for all lines to arrive

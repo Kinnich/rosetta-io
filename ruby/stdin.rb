@@ -3,7 +3,6 @@
 i = 1
 
 while user_input = gets
-  user_input.chomp
   puts "#{i} #{user_input.upcase}"
   i += 1
 end
