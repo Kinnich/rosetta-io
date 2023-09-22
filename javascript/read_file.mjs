@@ -7,21 +7,12 @@ import fs  from 'fs'
 // Get the file path from the command-line argument
 const file_path = process.argv[2]
 
-const lines = []
-
 const rl = readline.createInterface({
   input: fs.createReadStream(file_path),
-  crlfDelay: Infinity, // To recognize both '\n' and '\r\n' as line terminators
 })
 
-rl.on('line', (line) => {
-  lines.push(line)
-})
-
-rl.on('close', () => {
-  let i = 1
-  lines.forEach(line => {
-    console.log(i + " " + line.toUpperCase())
-    i++
-  })
-})
+let i = 1
+for await (const line of rl) {
+  console.log(i + " " + line.toUpperCase())
+  i++
+}
