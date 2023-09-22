@@ -113,9 +113,9 @@ def docker_runner(docker_client, docker_image, language):
 
     yield runner
 
-    # if runner.container: # i.e. if the test called `docker_runner.run(...)`
-    #     runner.container.stop()
-    #     runner.container.remove()
+    if runner.container: # i.e. if the test called `docker_runner.run(...)`
+        runner.container.stop()
+        runner.container.remove()
 
 
 class TestNullChar:

@@ -1,4 +1,4 @@
-# Script to read stdin line by line, transform, and return it
+"""Script to read stdin line by line, transform, and return it"""
 
 i = 1
 while True:
