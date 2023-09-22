@@ -1,7 +1,5 @@
-# Test script to get input, transform, and return it
-# Testing that it reads line by line
-# and that it does the transformation (to make sure that we're
-# getting the stdin throught python)
+# Script to read stdin line by line, transform, and return it
+
 i = 1
 while True:
     try:
