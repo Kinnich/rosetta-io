@@ -8,4 +8,3 @@ $encodedString = base64_encode($stringToEncode);
 
 echo $encodedString;
 ?>
-
