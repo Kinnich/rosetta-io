@@ -1,4 +1,7 @@
 <?php
 // Write null character to stdout
-echo "Hello World \0" . PHP_EOL; // echo function does not add a new line
+
+// echo function does not add a new line so adding it here manually
+// for consistnecy with other langauges
+echo "Hello World \0" . PHP_EOL;
 ?>
