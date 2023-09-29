@@ -10,4 +10,3 @@ while (true) {
 
     echo strtoupper($user_input);
 }
-?>

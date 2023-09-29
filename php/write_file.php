@@ -10,4 +10,3 @@ $uppercaseText = strtoupper($text);
 
 // Write the uppercase text to the specified file
 file_put_contents($outfile, $uppercaseText);
-?>

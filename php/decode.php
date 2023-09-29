@@ -6,5 +6,4 @@ $encodedString = $argv[1];
 // Decode the Base64 encoded string
 $decodedString = base64_decode($encodedString);
 
-echo $decodedString . PHP_EOL;
-?>
+echo $decodedString . "\n";

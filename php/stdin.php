@@ -3,14 +3,6 @@
 
 $i = 1;
 
-while (true) {
-    $user_input = fgets(STDIN);
-
-    if ($user_input === false) {
-        break; // End the loop when there's no more input
-    }
-
-    echo $i . ' ' . strtoupper($user_input);
-    $i++;
+while ($user_input = fgets(STDIN)) { // fgets returns false when nothing left to read
+    echo $i++ . ' ' . strtoupper($user_input);
 }
-?>

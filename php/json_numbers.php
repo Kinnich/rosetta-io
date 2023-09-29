@@ -8,5 +8,4 @@ $myStrings = array_slice($argv, 1);
 $stringLengths = array_map('strlen', $myStrings);
 
 // Encode the array as JSON and print to stdout
-echo json_encode($stringLengths) . PHP_EOL;
-?>
+echo json_encode($stringLengths) . "\n";
