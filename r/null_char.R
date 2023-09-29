@@ -1,17 +1,16 @@
-# Create a raw vector with a null character
-my_raw_vector <- as.raw(0)
+# Write the null character to stdout
 
-# # Print the raw vector
-# cat("Raw vector:", my_raw_vector, "\n")
+# R character strings don't support the null char so convert to binary
+text_raw <- charToRaw("Hello World ")
+null_char_raw <- as.raw(0)
+new_line_raw <- charToRaw("\n")
+raw_vector <- c(text_raw, null_char_raw, new_line_raw)
 
-# Convert the raw vector to a character string for manipulation/display
-# my_string <- rawToChar(my_raw_vector)
+# Write to a temporary binary file
+writeBin(raw_vector, "temp_binary_file.bin")
 
-# # Print the character string
-# cat("Character string:", my_string, "\n")
+# Read to stdout, intern=FALSE so output is not captured as a character vector
+system("cat temp_binary_file.bin", intern = FALSE)
 
-# control_char_representation <- paste0("\\", format(as.raw(0), width = 2, zero.print = ""))
-
-# control_char_representation <- utf8ToInt("\0")
-cat("Hello World", my_raw_vector)
-# cat("Hello World \0")
+# Delete the temp file
+unlink("temp_binary_file.bin")
