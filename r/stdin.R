@@ -2,6 +2,6 @@
 
 i <- 1
 for (line in readLines("stdin")) {
-  cat(sprintf("%s %s\n", i, toupper(line)))
+  cat(i, toupper(line), sep = " ", fill = TRUE) # fill flag adds new line
   i <- i + 1
 }
