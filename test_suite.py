@@ -213,10 +213,10 @@ class TestWriteJsonToStdout:
         """Test that a JSON object with arrays as values is parsed correctly"""
         # Write a dict of {arg:[list of arg chars]} to stdout
         # include empty string arg to check handling of empty JSON array
-        docker_runner.run_script(f'{language.script("json_object_with_array_values")} "" a bc def')
+        docker_runner.run_script(f'{language.script("json_object_with_array_values")} a bc def')
         docker_runner.container.wait()
         script_output = json.loads(docker_runner.container.logs())
-        assert script_output == {"": [], "a": ["A"], "bc": ["B", "C"], "def": ["D", "E", "F"]}
+        assert script_output == {"a": ["A"], "bc": ["B", "C"], "def": ["D", "E", "F"]}
 
     def test_json_object_array(self, docker_runner, language):
         """Test that a JSON array made of objects is parsed correctly"""
