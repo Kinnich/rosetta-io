@@ -1,4 +1,4 @@
-# """Script writes an array of objects to stdout"""
+# Script writes a JSON array of objects to stdout
 library(jsonlite)
 
 # Get the command-line arguments

@@ -1,4 +1,4 @@
-#' Script takes args and turns into JSON array
+#' Script takes command line arguments and turns into JSON array
 library(jsonlite)
 
 # Get the command-line arguments (strings)

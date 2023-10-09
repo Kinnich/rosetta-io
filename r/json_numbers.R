@@ -1,4 +1,4 @@
-#' Script takes args and outputs a list of lengths
+#' Script takes command-line arguments and outputs a JSON array
 
 library(jsonlite)
 
