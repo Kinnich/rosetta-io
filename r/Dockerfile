@@ -8,3 +8,4 @@ COPY ./ /app
 
 # Install the jsonlite package
 RUN R -e "install.packages('jsonlite')"
+RUN R -e "install.packages('base64enc')"
