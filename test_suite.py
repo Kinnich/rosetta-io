@@ -231,12 +231,10 @@ class TestWriteJsonToStdout:
         note: control character "\0" is used by C (and Python) to end strings and so we can't
         pass it as argument in the test string because it will raise "invalid argument" error
         """
-        # Pass a single string to the script that inculdes a control character and emoji
+        # Pass a single string to the script that includes a control character and emoji
         docker_runner.run_script(f'{language.script("json_control_chars")} "hello \n \1 world 🥸"')
         docker_runner.container.wait()
         script_output = json.loads(docker_runner.container.logs())
-        # Note: The text in the log is: "hello \n \u0001 world \ud83e\udd78" but Python escapes
-        # the escaped characters in the docker container's log so it looks wonky in the test
         assert script_output == "hello \n \u0001 world 🥸"
 
 
