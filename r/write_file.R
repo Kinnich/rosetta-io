@@ -1,4 +1,4 @@
-# 'Script to write text to a new file.
+# 'Script to write text to a new file
 
 # Get the command-line arguments
 args <- commandArgs(trailingOnly = TRUE)

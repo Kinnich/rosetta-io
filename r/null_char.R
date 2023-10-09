@@ -1,6 +1,7 @@
 #' Write the null character to stdout
 
-# R character strings don't support the null char so convert to binary
+# R character strings don't support the null character
+# so we convert the strings to raw vectors
 text_raw <- charToRaw("Hello World ")
 null_char_raw <- as.raw(0)
 new_line_raw <- charToRaw("\n")
