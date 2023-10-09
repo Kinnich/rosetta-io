@@ -15,8 +15,8 @@ The name `rosetta-io` is an hommage to [Rosetta Code](https://rosettacode.org/wi
 | Python 3            | ✅          |
 | Ruby                | ✅          |
 | Javascript, Node.js | ✅          |
+| PHP                 | ✅          |
 | R                   | ✅          |
-| PHP                 | Not started |
 | …                   |             |
 
 ## Running the test suite
