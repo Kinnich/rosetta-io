@@ -1,4 +1,5 @@
 #' Script transforms command-line arguments into JSON object
+library(jsonlite)
 
 # Get the command-line arguments (strings)
 args <- commandArgs(trailingOnly = TRUE)
